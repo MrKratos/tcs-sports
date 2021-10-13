@@ -3,6 +3,7 @@ import React from 'react';
 import { TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -50,9 +51,26 @@ function EquipoScreen({ navigation }) {
   
   );
 }
+const storeData = async (value) => {
+  try {
+    await AsyncStorage.setItem('@storage_Key', value)
+  } catch (e) {
+    // saving error
+  }
+}
 
-
+const getData = async () => {
+  try {
+    const value = await AsyncStorage.getItem('@storage_Key')
+    if (value !== null) {
+      // value previously stored
+    }
+  } catch (e) {
+    // error reading value
+  }
+}
 function HomeScreen({ navigation }) {
+
 
   const [number, onChangeNumber] = React.useState(null);
   const [number_2, onChangeNumber_2] = React.useState(null);
@@ -60,6 +78,7 @@ function HomeScreen({ navigation }) {
     <View style={styles.cont1}>
 
       <SafeAreaView>
+        {console.log(getData)}
 
         <Text style={styles.title}>Número de jugadores</Text>
         <View style={styles.cont2}>
