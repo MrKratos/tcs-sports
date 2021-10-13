@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable } from 'react-native';
+import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -85,7 +85,22 @@ function EquipoScreen({ navigation }) {
   return (
     <div>
       <h1 alignItems="center">Lista de Equipos</h1>
+      <div className="col-4">
+        <h4 className="text-center">
+          {editMode ? "Modificar" : "Agregar"}
 
+        </h4>
+        <form onSubmit={editMode ? saveTask : addTask}>
+          <input
+            type="text"
+            className="fomr-control mb-2"
+            placeholder="Ingrese el nombre..."
+            onChange={(text) => setTask(text.target.value)}
+            value={task}
+          ></input>
+          <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} type="submit">{editMode ? "Guardar" : "Agregar"}</button>
+        </form>
+      </div>
       <div className="row">
         <div className="col-8">
           {
@@ -98,7 +113,7 @@ function EquipoScreen({ navigation }) {
                 {
                   tasks.map((task) => (
                     <li className="list-group-item" key={task.id}>
-                      <span className="lead">{task.name}</span>
+                      <span className="lead" >{task.name}</span>
                       <button className="bnt btn-danger btn-sm float-right"
                         onClick={() => deleteTask(task.id)}
                       >Eliminar</button>
@@ -107,7 +122,13 @@ function EquipoScreen({ navigation }) {
 
                       >Editar</button>
 
-                      <button className="bnt btn-warning btn-sm float-right">Configurar</button>
+
+                      <Pressable>
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Jugadores')} >
+                          <Text style={styles.text}>Jugadores</Text>
+                        </TouchableOpacity>
+                      </Pressable>
+
                     </li>
                   ))
 
@@ -117,22 +138,7 @@ function EquipoScreen({ navigation }) {
           }
 
         </div>
-        <div className="col-4">
-          <h4 className="text-center">
-            {editMode ? "Modificar" : "Agregar"}
 
-          </h4>
-          <form onSubmit={editMode ? saveTask : addTask}>
-            <input
-              type="text"
-              className="fomr-control mb-2"
-              placeholder="Ingrese el nombre..."
-              onChange={(text) => setTask(text.target.value)}
-              value={task}
-            ></input>
-            <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} type="submit">{editMode ? "Guardar" : "Agregar"}</button>
-          </form>
-        </div>
       </div>
     </div>
 
@@ -289,9 +295,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderRadius: 30,
     elevation: 3,
     backgroundColor: '#f22275',
+    height: 40,
+    width: 120,
   },
   buttonxx: {
     alignItems: 'center',
