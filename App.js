@@ -24,12 +24,15 @@ export default function App() {
           <Stack.Screen name="Jugadores" component={PlayerScreen} options={{ title: 'Jugadores' }} />
         </Stack.Navigator>
       </NavigationContainer>
-
+      <View style={{ backgroundColor: '#fff' }}>
+        <View style={styles.separator2} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
+        <Image source={require('./assets/logos.png')}
+          style={{ width: '60%', height: 30, marginHorizontal: 80, marginBottom: 10 }} />
+      </View>
     </View>
   );
 }
 
-//change
 function EquipoScreen({ navigation }) {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -213,12 +216,15 @@ function HomeScreen({ navigation }) {
 
       </SafeAreaView>
       <View style={styles.cont2}>
-        <Pressable style={styles.button} onPress={() => navigation.navigate('Equipos')}>
-          <Text style={styles.text}>Aceptar</Text>
-
+        <Pressable>
+          <TouchableOpacity style={styles.buttonxx} onPress={() => navigation.navigate('Equipos')} >
+            <Text style={styles.text}>Aceptar</Text>
+          </TouchableOpacity>
         </Pressable>
+
       </View>
       <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
+
     </View>
   );
 
@@ -284,8 +290,16 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     elevation: 3,
     backgroundColor: '#f22275',
-    with: 100,
-
+  },
+  buttonxx: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 30,
+    elevation: 3,
+    backgroundColor: '#f22275'
   },
   buttontext: {
     color: '#fff',
@@ -362,4 +376,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#7f8c8d',
     justifyContent: 'center',
   },
+  separator2: {
+    marginVertical: 10,
+    height: 1,
+    width: '100%',
+    backgroundColor: '#cfcfcf',
+    justifyContent: 'center',
+
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.10,
+    shadowRadius: 2.50,
+
+    elevation: 0,
+
+  },
+
 });
