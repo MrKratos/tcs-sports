@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable } from 'react-native';
+import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,19 +8,31 @@ import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
 import { LinearGradient } from 'expo-linear-gradient';
 
-
-
 const Stack = createNativeStackNavigator();
+class App extends React.Component {
+  constructor(props){
+    super(props);
 
+    this.state = {
+      //url: 'http://54.159.180.65:8091/rest/dataTrainee?token=',
+      //url: 'http://54.167.140.94:8091/api/transacciones?token=',
+      url: 'http://52.23.211.26:8091/api/transacciones?token=',
+      nombre: null,
+      cedula: null,
+    }
+     
 
-export default function App() {
+  }
+  render(){
 
-  return (
+    const { value1, value2} = this.state;
+
+    return (
     <View style={styles.container}>
       {/* <Text>TCS - SPORTS!</Text> */}
       <StatusBar style="auto" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle:{ backgroundColor: '#fff'} }}  >
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle:{ backgroundColor: "#f22275" }, headerTitleStyle:{ fontSize:20 }, headerTitleAlign: "center", headerTintColor:"#fff"}}  >
           <Stack.Screen name="Partidos" component={HomeScreen} options={{ title: 'Partidos' }} />
           <Stack.Screen name="Equipos" component={EquipoScreen} options={{ title: 'Equipos' }} />
           <Stack.Screen name="Jugadores" component={PlayerScreen} options={{ title: 'Jugadores' }} />
@@ -34,7 +46,7 @@ export default function App() {
     </View>
   );
 }
-
+}
 function EquipoScreen({ navigation }) {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -82,23 +94,26 @@ function EquipoScreen({ navigation }) {
   }
 
 
-  return (
+  return ( 
+    <View  style={styles.cont1}>
     <div>
-      <h1 alignItems="center">Lista de Equipos</h1>
+      <h1 alignItems="center" >Lista de Equipos</h1>
       <div className="col-4">
         <h4 className="text-center">
           {editMode ? "Modificar" : "Agregar"}
 
         </h4>
         <form onSubmit={editMode ? saveTask : addTask}>
-          <input
+          <input 
             type="text"
             className="fomr-control mb-2"
             placeholder="Ingrese el nombre..."
             onChange={(text) => setTask(text.target.value)}
             value={task}
           ></input>
-          <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} type="submit">{editMode ? "Guardar" : "Agregar"}</button>
+          
+                <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} backgroundColor="red" type="submit">{editMode ? "Guardar" : "Agregar"}</button>
+
         </form>
       </div>
       <div className="row">
@@ -107,25 +122,39 @@ function EquipoScreen({ navigation }) {
 
 
             size(tasks) == 0 ? (
-              <h5>Aun no hay equipos</h5>
+              <Text style={styles.textList}>Aun no hay equipos</Text>
+              
             ) : (
               <ul className="list-group">
                 {
                   tasks.map((task) => (
+                   
                     <li className="list-group-item" key={task.id}>
                       <span className="lead" >{task.name}</span>
-                      <button className="bnt btn-danger btn-sm float-right"
+
+                      {/* <button className="bnt btn-danger btn-sm float-right"
                         onClick={() => deleteTask(task.id)}
-                      >Eliminar</button>
-                      <button className="bnt btn-warning btn-sm float-right"
+                      >Eliminar</button> */}
+                      <Pressable>
+                          <TouchableOpacity style={styles.buttonList} onPress={() =>  deleteTask(task.id)} >
+                            <Text style={styles.textList}>Eliminar</Text>
+                          </TouchableOpacity>
+                      </Pressable>
+
+                        {/* <button className="bnt btn-warning btn-sm float-right"
                         onClick={() => editTask(task)}
 
-                      >Editar</button>
-
+                      >Editar</button> */}
 
                       <Pressable>
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Jugadores')} >
-                          <Text style={styles.text}>Jugadores</Text>
+                          <TouchableOpacity style={styles.buttonList} onPress={() =>  editTask(task)} >
+                            <Text style={styles.textList}>Editar</Text>
+                          </TouchableOpacity>
+                      </Pressable>
+
+                      <Pressable>
+                        <TouchableOpacity style={styles.buttonList} onPress={() => navigation.navigate('Jugadores')} >
+                          <Text style={styles.textList}>Jugadores</Text>
                         </TouchableOpacity>
                       </Pressable>
 
@@ -143,9 +172,10 @@ function EquipoScreen({ navigation }) {
     </div>
 
 
+          
 
 
-
+    </View>
   );
 }
 
@@ -168,11 +198,6 @@ function teams() {
   )
 }
 
-
-
-
-
-
 const storeData = async (value) => {
   try {
     await AsyncStorage.setItem('@storage_Key', value)
@@ -191,6 +216,7 @@ const getData = async () => {
     // error reading value
   }
 }
+
 function HomeScreen({ navigation }) {
   const [number, onChangeNumber] = React.useState(null);
   const [number_2, onChangeNumber_2] = React.useState(null);
@@ -310,9 +336,25 @@ const styles = StyleSheet.create({
     elevation: 3,
     backgroundColor: '#f22275'
   },
+  buttonList: {
+    flex: 1,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 5,
+    width: 100,
+    paddingHorizontal: 1,
+    borderRadius: 10,
+    elevation: 3,
+    backgroundColor: '#f22275'
+  },
   buttontext: {
     color: '#fff',
     fontSize: 18
+  },
+  xbutton:{
+    
   },
   input: {
 
@@ -341,6 +383,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginVertical: 5,
     marginHorizontal: 15,
+  },
+ textList: {
+  fontSize: 13,
+  lineHeight: 21,
+  fontWeight: 'bold',
+  letterSpacing: 0.25,
+  color: 'white',
   },
   cont1: {
     // justifyContent: 'center',
@@ -406,3 +455,6 @@ const styles = StyleSheet.create({
   },
 
 });
+
+
+export default App;
