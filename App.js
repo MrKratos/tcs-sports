@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable } from 'react-native';
+import { TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,6 +24,9 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
 
+      <View style={styles.separator2} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
+      <Image source={require('./assets/logos.png')} 
+        style={{ width: '60%', height: 30, marginHorizontal: 80, marginBottom:10}} />
     </View>
   );
 }
@@ -251,6 +254,13 @@ separator: {
   height: 1,
   width: '90%',
   backgroundColor: '#7f8c8d',
+  justifyContent: 'center',
+},
+separator2: {
+  marginVertical: 10,
+  height: 2,
+  width: '100%',
+  backgroundColor: '#cfcfcf',
   justifyContent: 'center',
 },
 });
