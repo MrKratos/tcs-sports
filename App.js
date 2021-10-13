@@ -166,20 +166,16 @@ const styles = StyleSheet.create({
     //justifyContent: 'center',
     
   },
-  division: {
-    alignItems: 'rigth',
-
-  },
   button: {
-    alignItems: 'right',
-    justifyContent: 'right',
+    // alignItems: 'right',
+    // justifyContent: 'right',
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
     elevation: 3,
     backgroundColor: '#f22275',
-    with: 100,
+    
     
   },
   buttontext: {
