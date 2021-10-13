@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 const Stack = createNativeStackNavigator();
@@ -18,7 +20,7 @@ export default function App() {
       {/* <Text>TCS - SPORTS!</Text> */}
       <StatusBar style="auto" />
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle:{ backgroundColor: '#fff'} }}  >
           <Stack.Screen name="Partidos" component={HomeScreen} options={{ title: 'Partidos' }} />
           <Stack.Screen name="Equipos" component={EquipoScreen} options={{ title: 'Equipos' }} />
           <Stack.Screen name="Jugadores" component={PlayerScreen} options={{ title: 'Jugadores' }} />
