@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, FlatList } from 'react-native';
+import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, FlatList, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,21 +8,16 @@ import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import EquipoScreen  from './components/equipos';
+
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
   constructor(props){
     super(props);
-
-    this.state = {
-      //url: 'http://54.159.180.65:8091/rest/dataTrainee?token=',
-      //url: 'http://54.167.140.94:8091/api/transacciones?token=',
-      url: 'http://52.23.211.26:8091/api/transacciones?token=',
-      nombre: null,
-      cedula: null,
-    }
-     
-
+      this.state = {
+      }
   }
+
   render(){
 
     const { value1, value2} = this.state;
@@ -46,138 +41,10 @@ class App extends React.Component {
     </View>
   );
 }
+
 }
-function EquipoScreen({ navigation }) {
-  const [task, setTask] = useState("");
-  const [tasks, setTasks] = useState([]);
-  const [editMode, setEditMode] = useState(false)
-  const [id, setId] = useState("")
-  const addTask = (e) => {
-    e.preventDefault()
-    if (isEmpty(task)) {
-      console.log("task empty")
-      return
-    }
-
-    const newTask = {
-      id: shortid.generate(),
-      name: task
-    }
-
-    setTasks([...tasks, newTask])
-    setTask("")
-  }
-  const deleteTask = (id) => {
-    const filteredTasks = tasks.filter(task =>
-      task.id != id)
-    setTasks(filteredTasks)
-  }
-
-  const editTask = (theTask) => {
-    setTask(theTask.name)
-    setEditMode(true)
-    setId(theTask.id)
-  }
-
-  const saveTask = (e) => {
-    e.preventDefault()
-    if (isEmpty(task)) {
-      console.log("task empty")
-      return
-    }
-    //setTasks([...tasks, newTask])
-    const editedTasks = tasks.map(item => item.id === id ? { id, name: task } : item)
-    setTasks(editedTasks)
-    setEditMode(false)
-    setTask("")
-    setId("")
-  }
 
 
-  return ( 
-    <View  style={styles.cont1}>
-    <div>
-      <h1 alignItems="center" >Lista de Equipos</h1>
-      <div className="col-4">
-        <h4 className="text-center">
-          {editMode ? "Modificar" : "Agregar"}
-
-        </h4>
-        <form onSubmit={editMode ? saveTask : addTask}>
-          <input 
-            type="text"
-            className="fomr-control mb-2"
-            placeholder="Ingrese el nombre..."
-            onChange={(text) => setTask(text.target.value)}
-            value={task}
-          ></input>
-          
-                <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} backgroundColor="red" type="submit">{editMode ? "Guardar" : "Agregar"}</button>
-
-        </form>
-      </div>
-      <div className="row">
-        <div className="col-8">
-          {
-
-
-            size(tasks) == 0 ? (
-              <Text style={styles.textList}>Aun no hay equipos</Text>
-              
-            ) : (
-              <ul className="list-group">
-                {
-                  tasks.map((task) => (
-                   
-                    <li className="list-group-item" key={task.id}>
-                      <span className="lead" >{task.name}</span>
-
-                      {/* <button className="bnt btn-danger btn-sm float-right"
-                        onClick={() => deleteTask(task.id)}
-                      >Eliminar</button> */}
-                      <Pressable>
-                          <TouchableOpacity style={styles.buttonList} onPress={() =>  deleteTask(task.id)} >
-                            <Text style={styles.textList}>Eliminar</Text>
-                          </TouchableOpacity>
-                      </Pressable>
-
-                        {/* <button className="bnt btn-warning btn-sm float-right"
-                        onClick={() => editTask(task)}
-
-                      >Editar</button> */}
-
-                      <Pressable>
-                          <TouchableOpacity style={styles.buttonList} onPress={() =>  editTask(task)} >
-                            <Text style={styles.textList}>Editar</Text>
-                          </TouchableOpacity>
-                      </Pressable>
-
-                      <Pressable>
-                        <TouchableOpacity style={styles.buttonList} onPress={() => navigation.navigate('Jugadores')} >
-                          <Text style={styles.textList}>Jugadores</Text>
-                        </TouchableOpacity>
-                      </Pressable>
-
-                    </li>
-                  ))
-
-                }
-              </ul>
-            )
-          }
-
-        </div>
-
-      </div>
-    </div>
-
-
-          
-
-
-    </View>
-  );
-}
 
 function teams() {
   return (
@@ -315,6 +182,28 @@ const styles = StyleSheet.create({
     //justifyContent: 'center',
 
   },
+
+
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+ 
+  textInputStyle: {
+ 
+    textAlign: 'center',
+    height: 40,
+    width: '90%',
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+    borderRadius: 7,
+    marginTop: 12
+  },
+ 
+
+
+
   button: {
     // alignItems: 'right',
     // justifyContent: 'right',
