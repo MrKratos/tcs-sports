@@ -7,14 +7,13 @@ class EquipoScreen extends React.Component {
  
    constructor(props) {
    super(props);
-   this.array = [{ }],
+   this.array = [{ title: 'ONE', id: '1' }, { title: 'TWO', id: '2' }, { title: 'THREE' , id: '3'}],
  
    this.state = {
 
      arrayHolder: [],
-
-     textInput_Holder: ''
-
+     textInput_Holder: '',
+     i: 1,
    }
    this.GetItem = this.GetItem.bind(this);
  }
@@ -28,22 +27,18 @@ componentDidMount() {
 
 
 joinData = () => {
+  const { i: val } = this.state;
+  
+  this.array.push({title : this.state.textInput_Holder, id : this.state.i});
 
-  this.array.push({title : this.state.textInput_Holder});
+  this.setState({ arrayHolder: [...this.array] });
 
-  this.setState({ arrayHolder: [...this.array] })
-
+  this.setState({ i: val + 1  });
 }
 
 FlatListItemSeparator = () => {
   return (
-    <View
-      style={{
-        height: 1,
-        width: "100%",
-        backgroundColor: "#607D8B",
-      }}
-    />
+    <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
   );
 }
 
@@ -55,7 +50,6 @@ GetItem(item) {
 
 render(){
 
-  const { value1, value2} = this.state;
 
   return (
  
@@ -88,7 +82,30 @@ render(){
 
         ItemSeparatorComponent={this.FlatListItemSeparator}
 
-        renderItem={({ item }) => <Text style={styles.item} onPress={this.GetItem.bind(this, item.title)} > {item.title} </Text>}
+        renderItem={({ item }) => <Text style={styles.item} onPress={this.GetItem.bind(this, 'Nombre= '+item.title +' id= '+ item.id)}  >
+        
+        <Pressable>
+          <TouchableOpacity style={{
+          width:40, 
+          height:40, 
+          backgroundColor:'red', 
+          justifyContent: 'center',
+          marginTop: 10,
+          marginBottom:-10,
+          margin:-15,
+          marginEnd:50,
+          marginStart:1,
+          paddingHorizontal: 15,
+          borderRadius: 30,
+          elevation: 3,}}>
+            <Text style={styles.text}>x</Text>
+          </TouchableOpacity>
+        </Pressable>
+        {item.title}  <Text style={styles.text}>     </Text>
+        
+        
+     </Text>}
+        
       />
 
 
@@ -103,7 +120,7 @@ const styles = StyleSheet.create({
     MainContainer: {
  
         justifyContent: 'center',
-        //alignItems: 'center',
+        alignItems: 'center',
         flex: 1,
         margin: 2,
         paddingHorizontal:30,
@@ -120,15 +137,21 @@ const styles = StyleSheet.create({
   
   
     item: {
-      padding: 10,
+      marginEnd:50,
+          marginStart:10,
+      //padding: 10,
+      paddingTop:15,
+      //margin:10,
+      marginTop:15,
       fontSize: 18,
       height: 44,
+      color: '#252626',
       
     },
    
     textInputStyle: {
-        justifyContent: 'center',
-     alignItems: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
       textAlign: 'center',
       fontSize:18,
       height: 40,
@@ -149,6 +172,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f22275',
         borderRadius: 10,
         marginTop: 10,
+        marginBottom:10,
         alignItems: 'center',
       
     },
@@ -253,10 +277,10 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     separator: {
-      marginVertical: 30,
-      marginHorizontal: 20,
+      marginVertical: 25,
+      marginHorizontal: 0,
       height: 1,
-      width: '90%',
+      width: '100%',
       backgroundColor: '#7f8c8d',
       justifyContent: 'center',
     },
