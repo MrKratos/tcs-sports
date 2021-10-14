@@ -1,58 +1,59 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
-import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, FlatList } from 'react-native';
+import { Image, TextInput, StyleSheet, View, SafeAreaView, TouchableOpacity, Pressable, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
+import { Text } from 'react-native-elements';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
-  constructor(props){
-    super(props);
+  constructor() {
+    super();
 
     this.state = {
-      //url: 'http://54.159.180.65:8091/rest/dataTrainee?token=',
-      //url: 'http://54.167.140.94:8091/api/transacciones?token=',
-      url: 'http://52.23.211.26:8091/api/transacciones?token=',
       nombre: null,
       cedula: null,
+      equipo: '',
     }
-     
+
 
   }
-  render(){
-
-    const { value1, value2} = this.state;
+  render() {
+    const { value1, value2 } = this.state;
 
     return (
-    <View style={styles.container}>
-      {/* <Text>TCS - SPORTS!</Text> */}
-      <StatusBar style="auto" />
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle:{ backgroundColor: "#f22275" }, headerTitleStyle:{ fontSize:20 }, headerTitleAlign: "center", headerTintColor:"#fff"}}  >
-          <Stack.Screen name="Partidos" component={HomeScreen} options={{ title: 'Partidos' }} />
-          <Stack.Screen name="Equipos" component={EquipoScreen} options={{ title: 'Equipos' }} />
-          <Stack.Screen name="Jugadores" component={PlayerScreen} options={{ title: 'Jugadores' }} />
-        </Stack.Navigator>
-      </NavigationContainer>
-      <View style={{ backgroundColor: '#fff' }}>
-        <View style={styles.separator2} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
-        <Image source={require('./assets/logos.png')}
-          style={{ width: '60%', height: 30, marginHorizontal: 80, marginBottom: 10 }} />
+      <View style={styles.container}>
+        {/* <Text>TCS - SPORTS!</Text> */}
+        <StatusBar style="auto" />
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle: { backgroundColor: "#f22275" }, headerTitleStyle: { fontSize: 20 }, headerTitleAlign: "center", headerTintColor: "#fff" }}  >
+            <Stack.Screen name="Partidos" component={HomeScreen} options={{ title: 'Partidos' }} />
+            <Stack.Screen name="Equipos" component={EquipoScreen} options={{ title: 'Equipos' }} />
+            <Stack.Screen name="Jugadores" component={PlayerScreen} options={{ title: 'Jugadores' }} />
+          </Stack.Navigator>
+        </NavigationContainer>
+        <View style={{ backgroundColor: '#fff' }}>
+          <View style={styles.separator2} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
+          <Image source={require('./assets/logos.png')}
+            style={{ width: '60%', height: 30, marginHorizontal: 80, marginBottom: 10 }} />
+        </View>
       </View>
-    </View>
-  );
-}
+    );
+  }
 }
 function EquipoScreen({ navigation }) {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
   const [editMode, setEditMode] = useState(false)
   const [id, setId] = useState("")
+
+
   const addTask = (e) => {
+
     e.preventDefault()
     if (isEmpty(task)) {
       console.log("task empty")
@@ -67,6 +68,8 @@ function EquipoScreen({ navigation }) {
     setTasks([...tasks, newTask])
     setTask("")
   }
+
+
   const deleteTask = (id) => {
     const filteredTasks = tasks.filter(task =>
       task.id != id)
@@ -94,109 +97,84 @@ function EquipoScreen({ navigation }) {
   }
 
 
-  return ( 
-    <View  style={styles.cont1}>
-    <div>
-      <h1 alignItems="center" >Lista de Equipos</h1>
-      <div className="col-4">
-        <h4 className="text-center">
-          {editMode ? "Modificar" : "Agregar"}
 
-        </h4>
-        <form onSubmit={editMode ? saveTask : addTask}>
-          <input 
-            type="text"
-            className="fomr-control mb-2"
-            placeholder="Ingrese el nombre..."
+  return (
+    <View style={styles.cont1}>
+
+      <View>
+        <Text h1>Lista de Equipos</Text>
+        <View>
+          <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
+          <TextInput placeholder="Ingrese el nombre..."
             onChange={(text) => setTask(text.target.value)}
+            style={styles.input}
             value={task}
-          ></input>
-          
-                <button className={editMode ? "bnt btn-dark btn-warning" : "bnt btn-dark btn-block"} backgroundColor="red" type="submit">{editMode ? "Guardar" : "Agregar"}</button>
+          />
 
-        </form>
-      </div>
-      <div className="row">
-        <div className="col-8">
-          {
+          <View style={styles.cont2}>
+            <Pressable>
+              <TouchableOpacity style={styles.buttonList}
+                onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
+                hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} >
+                <Text style={styles.textList}>{editMode ? "Guardar" : "Agregar"}</Text>
+              </TouchableOpacity>
+            </Pressable>
 
-
-            size(tasks) == 0 ? (
-              <Text style={styles.textList}>Aun no hay equipos</Text>
-              
-            ) : (
-              <ul className="list-group">
-                {
-                  tasks.map((task) => (
-                   
-                    <li className="list-group-item" key={task.id}>
-                      <span className="lead" >{task.name}</span>
-
-                      {/* <button className="bnt btn-danger btn-sm float-right"
-                        onClick={() => deleteTask(task.id)}
-                      >Eliminar</button> */}
-                      <Pressable>
-                          <TouchableOpacity style={styles.buttonList} onPress={() =>  deleteTask(task.id)} >
-                            <Text style={styles.textList}>Eliminar</Text>
-                          </TouchableOpacity>
-                      </Pressable>
-
-                        {/* <button className="bnt btn-warning btn-sm float-right"
-                        onClick={() => editTask(task)}
-
-                      >Editar</button> */}
-
-                      <Pressable>
-                          <TouchableOpacity style={styles.buttonList} onPress={() =>  editTask(task)} >
-                            <Text style={styles.textList}>Editar</Text>
-                          </TouchableOpacity>
-                      </Pressable>
-
-                      <Pressable>
-                        <TouchableOpacity style={styles.buttonList} onPress={() => navigation.navigate('Jugadores')} >
-                          <Text style={styles.textList}>Jugadores</Text>
-                        </TouchableOpacity>
-                      </Pressable>
-
-                    </li>
-                  ))
-
-                }
-              </ul>
-            )
-          }
-
-        </div>
-
-      </div>
-    </div>
+          </View>
 
 
-          
+
+
+        </View>
+        <View>
+          <View style={styles.cont2}>
+
+            {
+              size(tasks) == 0 ? (
+                <Text style={styles.textList}>Aun no hay equipos</Text>
+
+              ) : (
+
+                tasks.map((task) => (
+                  <View key={task.id}>
+
+                    <Text style={styles.item}>{task.name}</Text>
+                    <Pressable>
+                      <TouchableOpacity style={styles.buttonList} onPress={() => deleteTask(task.id)} >
+                        <Text style={styles.textList}>Eliminar</Text>
+                      </TouchableOpacity>
+                    </Pressable>
+
+
+                    <Pressable>
+                      <TouchableOpacity style={styles.buttonList} onPress={() => editTask(task)} >
+                        <Text style={styles.textList}>Editar</Text>
+                      </TouchableOpacity>
+                    </Pressable>
+
+                    <Pressable>
+                      <TouchableOpacity style={styles.buttonList} onPress={() => navigation.navigate('Jugadores')} >
+                        <Text style={styles.textList}>Jugadores</Text>
+                      </TouchableOpacity>
+                    </Pressable>
+                  </View>
+
+                ))
+              )
+            }
+          </View>
+        </View>
+      </View>
+
+
+
+
 
 
     </View>
   );
 }
 
-function teams() {
-  return (
-    <div>
-      <h1>Tareas</h1>
-      <div>
-        <h4>Lista de Tareas</h4>
-        <ul>
-          <li>
-            <span>Nombre del equipo</span>
-            <button>Eliminar</button>
-            <button>Editar</button>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-  )
-}
 
 const storeData = async (value) => {
   try {
@@ -295,12 +273,14 @@ function PlayerScreen({ navigation }) {
         </View>
 
       </SafeAreaView>
+
       <View style={styles.cont2}>
         <Pressable style={styles.button} >
           <Text style={styles.text}>Aceptar</Text>
 
         </Pressable>
       </View>
+
       <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
     </View>
   );
@@ -353,8 +333,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 18
   },
-  xbutton:{
-    
+  xbutton: {
+
   },
   input: {
 
@@ -384,12 +364,12 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginHorizontal: 15,
   },
- textList: {
-  fontSize: 13,
-  lineHeight: 21,
-  fontWeight: 'bold',
-  letterSpacing: 0.25,
-  color: 'white',
+  textList: {
+    fontSize: 13,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'white',
   },
   cont1: {
     // justifyContent: 'center',
@@ -453,6 +433,12 @@ const styles = StyleSheet.create({
     elevation: 0,
 
   },
+  item: {
+    marginTop: 24,
+    padding: 30,
+    backgroundColor: 'pink',
+    fontSize: 24
+  }
 
 });
 
