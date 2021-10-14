@@ -18,6 +18,7 @@ class App extends React.Component {
       id: '',
       task: '',
     }
+    this.GetItem = this.GetItem.bind(this);
   }
   render() {
     const { value1, value2 } = this.state;
