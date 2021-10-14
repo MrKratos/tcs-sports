@@ -1,26 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { Image, TextInput, StyleSheet, View, SafeAreaView, TouchableOpacity, Pressable, FlatList } from 'react-native';
+import React, { useState, setState } from 'react';
+import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, FlatList } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
-import { Text } from 'react-native-elements';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Input, Text } from 'react-native-elements';
+
+
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
   constructor() {
     super();
-
     this.state = {
-      nombre: null,
-      cedula: null,
-      equipo: '',
+      id: '',
+      task: '',
     }
-
-
   }
   render() {
     const { value1, value2 } = this.state;
@@ -52,19 +49,14 @@ function EquipoScreen({ navigation }) {
   const [id, setId] = useState("")
 
 
-  const addTask = (e) => {
+  const addTask = (task) => {
 
-    e.preventDefault()
-    if (isEmpty(task)) {
-      console.log("task empty")
-      return
-    }
 
     const newTask = {
       id: shortid.generate(),
       name: task
     }
-
+    console.log(task)
     setTasks([...tasks, newTask])
     setTask("")
   }
@@ -82,12 +74,8 @@ function EquipoScreen({ navigation }) {
     setId(theTask.id)
   }
 
-  const saveTask = (e) => {
-    e.preventDefault()
-    if (isEmpty(task)) {
-      console.log("task empty")
-      return
-    }
+  const saveTask = () => {
+
     //setTasks([...tasks, newTask])
     const editedTasks = tasks.map(item => item.id === id ? { id, name: task } : item)
     setTasks(editedTasks)
@@ -105,29 +93,25 @@ function EquipoScreen({ navigation }) {
         <Text h1>Lista de Equipos</Text>
         <View>
           <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
-          <TextInput placeholder="Ingrese el nombre..."
-            onChange={(text) => setTask(text.target.value)}
+
+
+
+          <TextInput
+            placeholder="Ingrese el nombre..."
             style={styles.input}
+            onChangeText={(text) => setState({ task: text })}
             value={task}
+            keyboardType="numeric"
           />
 
-          <View style={styles.cont2}>
-            <Pressable>
-              <TouchableOpacity style={styles.buttonList}
-                onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
-                hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }} >
-                <Text style={styles.textList}>{editMode ? "Guardar" : "Agregar"}</Text>
-              </TouchableOpacity>
-            </Pressable>
-
-          </View>
-
-
-
+          <Button
+            title={editMode ? "Guardar" : "Agregar"}
+            onPress={() => { editMode ? saveTask(task) : addTask(task) }}
+          />
 
         </View>
         <View>
-          <View style={styles.cont2}>
+          <View>
 
             {
               size(tasks) == 0 ? (
@@ -158,41 +142,12 @@ function EquipoScreen({ navigation }) {
                       </TouchableOpacity>
                     </Pressable>
                   </View>
-
-                ))
-              )
-            }
+                )))}
           </View>
         </View>
       </View>
-
-
-
-
-
-
     </View>
   );
-}
-
-
-const storeData = async (value) => {
-  try {
-    await AsyncStorage.setItem('@storage_Key', value)
-  } catch (e) {
-    // saving error
-  }
-}
-
-const getData = async () => {
-  try {
-    const value = await AsyncStorage.getItem('@storage_Key')
-    if (value !== null) {
-      // value previously stored
-    }
-  } catch (e) {
-    // error reading value
-  }
 }
 
 function HomeScreen({ navigation }) {
@@ -202,8 +157,6 @@ function HomeScreen({ navigation }) {
     <View style={styles.cont1}>
 
       <SafeAreaView>
-        {console.log(getData)}
-
         <Text style={styles.title}>Número de jugadores</Text>
         <View style={styles.cont2}>
           <TextInput
