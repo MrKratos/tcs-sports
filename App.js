@@ -99,9 +99,8 @@ function EquipoScreen({ navigation }) {
           <TextInput
             placeholder="Ingrese el nombre..."
             style={styles.input}
-            onChangeText={(text) => setState({ task: text })}
+            onChangeText={(text) => { this.setState({ task: text }) }}
             value={task}
-            keyboardType="numeric"
           />
 
           <Button
