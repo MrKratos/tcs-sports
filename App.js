@@ -1,12 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, setState } from 'react';
-import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, ScrollView } from 'react-native';
+import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, ScrollView, Text} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isEmpty, size } from 'lodash';
 import shortid from 'shortid';
-import { Input, Text } from 'react-native-elements';
+//import { Input,  } from 'react-native-elements';
 
 
 
@@ -98,18 +98,26 @@ function EquipoScreen({ navigation }) {
       <ScrollView style={styles.scrollView}>
 
         <View>
-          <Text h1>Lista de Equipos</Text>
-          <View>
-            <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
+          <Text style={styles.title}>Lista de Equipos</Text>
+          <View style={styles.cont2}>
+            {/* <Text style={styles.title}>   {editMode ? "Modificar" : "Agregar"}</Text> */}
             <TextInput placeholder="Ingrese el nombre..."
               onChangeText={setTask}
               style={styles.input}
               value={task}
             />
-            <Button
+            </View>
+            <View>
+            {/* <Button 
               title={editMode ? "Guardar" : "Agregar"}
               onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
-            />
+            /> */}
+            <Pressable  >
+            <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
+            <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
+            </TouchableOpacity>
+            </Pressable>
+
           </View>
           <View>
             <View>
@@ -122,23 +130,32 @@ function EquipoScreen({ navigation }) {
                   tasks.map((task) => (
                     <View key={task.id}>
                       <Text style={styles.item}>{task.name}</Text>
-                      <Button
-                        style={styles.buttonList}
-                        title="Eliminar"
-                        onPress={() => deleteTask(task.id)}
-                      />
 
+                      <View style={styles.botonlinea}>
                       <Button
-                        style={styles.buttonList}
-                        title="Editar"
-                        onPress={() => editTask(task)}
-                      />
-
-                      <Button
+                        color='#47d170'
                         style={styles.buttonList}
                         title="Jugadores"
                         onPress={() => navigation.navigate('Jugadores')}
                       />
+                      
+
+                      <Button
+                        color='#479cd1'
+                        style={styles.buttonList}
+                        title="Editar"
+                        onPress={() => editTask(task)}
+                      />
+                      <Button
+                       
+                       marginBottom={10}
+                       color='#c94c3e' 
+                       style={styles.buttonList}
+                       title="Eliminar"
+                       onPress={() => deleteTask(task.id)}
+                     />
+                      
+                    </View> 
                     </View>
                   )))}
             </View>
@@ -245,24 +262,33 @@ function PlayerScreen({ navigation }) {
 
 
   return (
-    <View style={styles.container}>
+    <View style={styles.cont1}>
 
       <ScrollView style={styles.scrollView}>
 
         <View>
-          <Text h1>Lista de Jugadores</Text>
-          <View>
-            <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
+          <Text style={styles.title}>Lista de Jugadores</Text>
+          <View style={styles.cont2}>
+            {/* <Text style={styles.title}>   {editMode ? "Modificar" : "Agregar"}</Text> */}
             <TextInput placeholder="Ingrese el nombre..."
               onChangeText={setTask}
               style={styles.input}
               value={task}
             />
-            <Button
+             </View>
+             <View>
+            {/* <Button 
               title={editMode ? "Guardar" : "Agregar"}
               onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
-            />
+            /> */}
+
+            <Pressable  >
+            <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
+            <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
+            </TouchableOpacity>
+            </Pressable>
           </View>
+         
           <View>
             <View>
 
@@ -274,23 +300,30 @@ function PlayerScreen({ navigation }) {
                   tasks.map((task) => (
                     <View key={task.id}>
                       <Text style={styles.item}>{task.name}</Text>
-                      <Button
-                        style={styles.buttonList}
-                        title="Eliminar"
-                        onPress={() => deleteTask(task.id)}
-                      />
 
+                    <View style={styles.botonlinea}>
+                      
+                    <Button
+                        color='#47d170'
+                        style={styles.buttonList}
+                        title="Escanear"
+                        onPress={() => navigation.navigate('Jugadores')}
+                      />
                       <Button
+                        color='#479cd1'
                         style={styles.buttonList}
                         title="Editar"
                         onPress={() => editTask(task)}
                       />
 
+                      
                       <Button
+                        color='#c94c3e' 
                         style={styles.buttonList}
-                        title="Escanear"
-                        onPress={() => navigation.navigate('Jugadores')}
+                        title="Eliminar"
+                        onPress={() => deleteTask(task.id)}
                       />
+                      </View>
                     </View>
                   )))}
             </View>
@@ -332,9 +365,23 @@ const styles = StyleSheet.create({
     width: 120,
   },
   buttonxx: {
+    //width: '90%',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 30,
+    elevation: 3,
+    backgroundColor: '#f22275'
+  },
+  buttonxxx: {
+    width: '80%',
+     marginHorizontal:'10%' ,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom:10,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
@@ -390,7 +437,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   textList: {
-    fontSize: 13,
+    marginHorizontal:15,
+    fontSize: 15,
     lineHeight: 21,
     fontWeight: 'bold',
     letterSpacing: 0.25,
@@ -461,9 +509,15 @@ const styles = StyleSheet.create({
   item: {
     marginTop: 24,
     padding: 30,
-    backgroundColor: 'pink',
+    backgroundColor: '#f7f7f7',
     fontSize: 24
-  }
+  },
+  botonlinea: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
 });
 
