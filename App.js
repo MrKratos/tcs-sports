@@ -196,47 +196,111 @@ function HomeScreen({ navigation }) {
 }
 
 function PlayerScreen({ navigation }) {
+  const [task, setTask] = useState("");
+  const [tasks, setTasks] = useState([]);
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState("")
 
-  const [number, onChangeNumber] = React.useState(null);
-  const [number_2, onChangeNumber_2] = React.useState(null);
+
+  const addTask = (e) => {
+
+    e.preventDefault()
+    if (isEmpty(task)) {
+      console.log("task empty")
+      return
+    }
+
+    const newTask = {
+      id: shortid.generate(),
+      name: task
+    }
+
+    setTasks([...tasks, newTask])
+    setTask("")
+  }
+
+
+  const deleteTask = (id) => {
+    const filteredTasks = tasks.filter(task =>
+      task.id != id)
+    setTasks(filteredTasks)
+  }
+
+  const editTask = (theTask) => {
+    setTask(theTask.name)
+    setEditMode(true)
+    setId(theTask.id)
+  }
+
+  const saveTask = () => {
+
+    //setTasks([...tasks, newTask])
+    const editedTasks = tasks.map(item => item.id === id ? { id, name: task } : item)
+    setTasks(editedTasks)
+    setEditMode(false)
+    setTask("")
+    setId("")
+  }
+
+
+
   return (
-    <View style={styles.cont1}>
+    <View style={styles.container}>
 
-      <SafeAreaView>
+      <ScrollView style={styles.scrollView}>
 
-        <Text style={styles.title}>Nombre</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber_2}
-            value={number_2}
-            placeholder="Nombre"
-          />
+        <View>
+          <Text h1>Lista de Jugadores</Text>
+          <View>
+            <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
+            <TextInput placeholder="Ingrese el nombre..."
+              onChangeText={setTask}
+              style={styles.input}
+              value={task}
+            />
+            <Button
+              title={editMode ? "Guardar" : "Agregar"}
+              onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
+            />
+          </View>
+          <View>
+            <View>
+
+              {
+                size(tasks) == 0 ? (
+                  <Text style={styles.textList}>Aun no hay jugadores registrados</Text>
+
+                ) : (
+                  tasks.map((task) => (
+                    <View key={task.id}>
+                      <Text style={styles.item}>{task.name}</Text>
+                      <Button
+                        style={styles.buttonList}
+                        title="Eliminar"
+                        onPress={() => deleteTask(task.id)}
+                      />
+
+                      <Button
+                        style={styles.buttonList}
+                        title="Editar"
+                        onPress={() => editTask(task)}
+                      />
+
+                      <Button
+                        style={styles.buttonList}
+                        title="Escanear"
+                        onPress={() => navigation.navigate('Jugadores')}
+                      />
+                    </View>
+                  )))}
+            </View>
+          </View>
         </View>
+      </ScrollView>
 
-        <Text style={styles.title}>Edad</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Edad"
-            keyboardType="numeric"
-          />
-        </View>
-
-      </SafeAreaView>
-
-      <View style={styles.cont2}>
-        <Pressable style={styles.button} >
-          <Text style={styles.text}>Aceptar</Text>
-
-        </Pressable>
-      </View>
-
-      <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
     </View>
   );
+
 }
 
 
