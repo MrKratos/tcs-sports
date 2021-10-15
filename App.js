@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, setState } from 'react';
-import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, FlatList } from 'react-native';
+import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, ScrollView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,16 +12,15 @@ import { Input, Text } from 'react-native-elements';
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      id: '',
-      task: '',
+      id: 'ss',
+      task: 'aa',
     }
-    this.GetItem = this.GetItem.bind(this);
+
   }
   render() {
-    const { value1, value2 } = this.state;
 
     return (
       <View style={styles.container}>
@@ -43,6 +42,7 @@ class App extends React.Component {
     );
   }
 }
+
 function EquipoScreen({ navigation }) {
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -50,14 +50,19 @@ function EquipoScreen({ navigation }) {
   const [id, setId] = useState("")
 
 
-  const addTask = (task) => {
+  const addTask = (e) => {
 
+    e.preventDefault()
+    if (isEmpty(task)) {
+      console.log("task empty")
+      return
+    }
 
     const newTask = {
       id: shortid.generate(),
       name: task
     }
-    console.log(task)
+
     setTasks([...tasks, newTask])
     setTask("")
   }
@@ -88,64 +93,59 @@ function EquipoScreen({ navigation }) {
 
 
   return (
-    <View style={styles.cont1}>
+    <View style={styles.container}>
 
-      <View>
-        <Text h1>Lista de Equipos</Text>
+      <ScrollView style={styles.scrollView}>
+
         <View>
-          <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
-
-
-
-          <TextInput
-            placeholder="Ingrese el nombre..."
-            style={styles.input}
-            onChangeText={(text) => { this.setState({ task: text }) }}
-            value={task}
-          />
-
-          <Button
-            title={editMode ? "Guardar" : "Agregar"}
-            onPress={() => { editMode ? saveTask(task) : addTask(task) }}
-          />
-
-        </View>
-        <View>
+          <Text h1>Lista de Equipos</Text>
           <View>
+            <Text h4>   {editMode ? "Modificar" : "Agregar"}</Text>
+            <TextInput placeholder="Ingrese el nombre..."
+              onChangeText={setTask}
+              style={styles.input}
+              value={task}
+            />
+            <Button
+              title={editMode ? "Guardar" : "Agregar"}
+              onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
+            />
+          </View>
+          <View>
+            <View>
 
-            {
-              size(tasks) == 0 ? (
-                <Text style={styles.textList}>Aun no hay equipos</Text>
+              {
+                size(tasks) == 0 ? (
+                  <Text style={styles.textList}>Aun no hay equipos</Text>
 
-              ) : (
+                ) : (
+                  tasks.map((task) => (
+                    <View key={task.id}>
+                      <Text style={styles.item}>{task.name}</Text>
+                      <Button
+                        style={styles.buttonList}
+                        title="Eliminar"
+                        onPress={() => deleteTask(task.id)}
+                      />
 
-                tasks.map((task) => (
-                  <View key={task.id}>
+                      <Button
+                        style={styles.buttonList}
+                        title="Editar"
+                        onPress={() => editTask(task)}
+                      />
 
-                    <Text style={styles.item}>{task.name}</Text>
-                    <Pressable>
-                      <TouchableOpacity style={styles.buttonList} onPress={() => deleteTask(task.id)} >
-                        <Text style={styles.textList}>Eliminar</Text>
-                      </TouchableOpacity>
-                    </Pressable>
-
-
-                    <Pressable>
-                      <TouchableOpacity style={styles.buttonList} onPress={() => editTask(task)} >
-                        <Text style={styles.textList}>Editar</Text>
-                      </TouchableOpacity>
-                    </Pressable>
-
-                    <Pressable>
-                      <TouchableOpacity style={styles.buttonList} onPress={() => navigation.navigate('Jugadores')} >
-                        <Text style={styles.textList}>Jugadores</Text>
-                      </TouchableOpacity>
-                    </Pressable>
-                  </View>
-                )))}
+                      <Button
+                        style={styles.buttonList}
+                        title="Jugadores"
+                        onPress={() => navigation.navigate('Jugadores')}
+                      />
+                    </View>
+                  )))}
+            </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
+
     </View>
   );
 }
@@ -248,6 +248,14 @@ const styles = StyleSheet.create({
     //justifyContent: 'center',
 
   },
+  container3: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+  },
+  scrollView: {
+    backgroundColor: '#fff',
+    // marginHorizontal: 20,
+  },
   button: {
     // alignItems: 'right',
     // justifyContent: 'right',
@@ -322,7 +330,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     fontWeight: 'bold',
     letterSpacing: 0.25,
-    color: 'white',
+    color: 'black',
   },
   cont1: {
     // justifyContent: 'center',
