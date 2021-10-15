@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Image, TextInput, StyleSheet, Text, View, SafeAreaView, TouchableOpacity, Button, Pressable, FlatList, Alert } from 'react-native';
+import PlayerScreen  from './jugadores';
+import App  from '../App';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 
-
+//const Stack = createNativeStackNavigator();
 class EquipoScreen extends React.Component {
  
    constructor(props) {
@@ -17,43 +21,38 @@ class EquipoScreen extends React.Component {
    }
    this.GetItem = this.GetItem.bind(this);
  }
-
-
- 
 componentDidMount() {
 
   this.setState({ arrayHolder: [...this.array] })
 }
-
-
 joinData = () => {
   const { i: val } = this.state;
-  
   this.array.push({title : this.state.textInput_Holder, id : this.state.i});
-
   this.setState({ arrayHolder: [...this.array] });
-
   this.setState({ i: val + 1  });
 }
-
 FlatListItemSeparator = () => {
   return (
     <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
   );
 }
-
 GetItem(item) {
 
   Alert.alert(item);
 
 }
-
 render(){
-
-
   return (
- 
     <View style={styles.MainContainer}>
+   
+   <View style={styles.cont2}>   
+            <Pressable>
+            <TouchableOpacity style={styles.buttonxx} onPress={ () => this.props.navigation.navigate('Jugadores') } >
+                <Text style={styles.text}>Jugadores</Text>
+            </TouchableOpacity>
+            </Pressable>
+        </View>
+      
 
       <TextInput
         placeholder="Ingrese un nuevo equipo"
@@ -70,20 +69,13 @@ render(){
 
       <FlatList
 
-
-
         data={this.state.arrayHolder}
-
         width='100%'
-
         extraData={this.state.arrayHolder}
-
         keyExtractor={(index) => index.toString()}
-
         ItemSeparatorComponent={this.FlatListItemSeparator}
-
         renderItem={({ item }) => <Text style={styles.item} onPress={this.GetItem.bind(this, 'Nombre= '+item.title +' id= '+ item.id)}  >
-        
+      
         <Pressable>
           <TouchableOpacity style={{
           width:40, 
@@ -101,13 +93,8 @@ render(){
             <Text style={styles.text}>x</Text>
           </TouchableOpacity>
         </Pressable>
-        {item.title}  <Text style={styles.text}>     </Text>
-        
-        
-     </Text>}
-        
-      />
-
+        {item.title}  <Text style={styles.text}>     </Text>  
+     </Text>}  />
 
     </View>
  
@@ -120,7 +107,7 @@ const styles = StyleSheet.create({
     MainContainer: {
  
         justifyContent: 'center',
-        alignItems: 'center',
+        //alignItems: 'center',
         flex: 1,
         margin: 2,
         paddingHorizontal:30,

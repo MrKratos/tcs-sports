@@ -9,17 +9,49 @@ import shortid from 'shortid';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import EquipoScreen  from './components/equipos';
+import PlayerScreen  from './components/jugadores';
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
   constructor(props){
     super(props);
-      this.state = {
-      }
+    this.array = [{ title: 'ONE', id: '1' }, { title: 'TWO', id: '2' }, { title: 'THREE' , id: '3'}],
+ 
+    this.state = {
+ 
+      arrayHolder: [],
+      textInput_Holder: '',
+      i: 1,
+    }
+    this.GetItem = this.GetItem.bind(this);
     
-
+     
   }
+ 
 
+  componentDidMount() {
+
+    this.setState({ arrayHolder: [...this.array] })
+  }
+  joinData = () => {
+    const { i: val } = this.state;
+    
+    this.array.push({title : this.state.textInput_Holder, id : this.state.i});
+  
+    this.setState({ arrayHolder: [...this.array] });
+  
+    this.setState({ i: val + 1  });
+  }
+  FlatListItemSeparator = () => {
+    return (
+      <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
+    );
+  }
+  GetItem(item) {
+  
+    Alert.alert(item);
+  
+  }
 
   render(){
 
@@ -46,6 +78,71 @@ class App extends React.Component {
 }
 
 }
+
+const OnPressPlayer = () => { navigation.navigate('Jugadores'); }
+
+
+// function PlayerScreen({ navigation }) {
+
+//   return (
+//     <View style={styles.container}>
+   
+      
+//       <View style={styles.cont2}>   
+//             <Pressable>
+//             <TouchableOpacity style={styles.buttonxx} onPress={() => navigation.navigate('Equipos')} >
+//                 <Text style={styles.text}>Aceptar</Text>
+//             </TouchableOpacity>
+//             </Pressable>
+//         </View>
+
+//       <TextInput
+//         placeholder="Ingrese un nuevo equipo"
+//         onChangeText={data => this.setState({ textInput_Holder: data })}
+//         style={styles.textInputStyle}
+        
+//       />
+
+//       <TouchableOpacity onPress={this.joinData} activeOpacity={0.7} style={styles.button} >
+
+//         <Text style={styles.text}> Aceptar </Text>
+
+//       </TouchableOpacity>
+
+//       <FlatList
+
+//         data={this.state.arrayHolder}
+//         width='100%'
+//         extraData={this.state.arrayHolder}
+//         keyExtractor={(index) => index.toString()}
+//         ItemSeparatorComponent={this.FlatListItemSeparator}
+//         renderItem={({ item }) => <Text style={styles.item} onPress={this.GetItem.bind(this, 'Nombre= '+item.title +' id= '+ item.id)}  >
+      
+//         <Pressable>
+//           <TouchableOpacity style={{
+//           width:40, 
+//           height:40, 
+//           backgroundColor:'red', 
+//           justifyContent: 'center',
+//           marginTop: 10,
+//           marginBottom:-10,
+//           margin:-15,
+//           marginEnd:50,
+//           marginStart:1,
+//           paddingHorizontal: 15,
+//           borderRadius: 30,
+//           elevation: 3,}}>
+//             <Text style={styles.text}>x</Text>
+//           </TouchableOpacity>
+//         </Pressable>
+//         {item.title}  <Text style={styles.text}>     </Text>  
+//      </Text>}  />
+
+//     </View>
+ 
+// );
+// }
+
 
 
 
@@ -86,6 +183,8 @@ const getData = async () => {
     // error reading value
   }
 }
+
+
 
 function HomeScreen({ navigation }) {
   const [number, onChangeNumber] = React.useState(null);
@@ -134,47 +233,6 @@ function HomeScreen({ navigation }) {
 
 }
 
-function PlayerScreen({ navigation }) {
-
-  const [number, onChangeNumber] = React.useState(null);
-  const [number_2, onChangeNumber_2] = React.useState(null);
-  return (
-    <View style={styles.cont1}>
-
-      <SafeAreaView>
-
-        <Text style={styles.title}>Nombre</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber_2}
-            value={number_2}
-            placeholder="Nombre"
-          />
-        </View>
-
-        <Text style={styles.title}>Edad</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="Edad"
-            keyboardType="numeric"
-          />
-        </View>
-
-      </SafeAreaView>
-      <View style={styles.cont2}>
-        <Pressable style={styles.button} >
-          <Text style={styles.text}>Aceptar</Text>
-
-        </Pressable>
-      </View>
-      <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
-    </View>
-  );
-}
 
 
 //styles
