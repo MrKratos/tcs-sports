@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, setState } from 'react';
-import { Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, ScrollView, Text} from 'react-native';
+import { Modal, Image, TextInput, StyleSheet, Button, View, SafeAreaView, TouchableOpacity, Pressable, ScrollView, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,19 +12,22 @@ import shortid from 'shortid';
 
 const Stack = createNativeStackNavigator();
 class App extends React.Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.state = {
       id: 'ss',
       task: 'aa',
+      modalVisible: false,
     }
 
   }
+
   render() {
 
     return (
       <View style={styles.container}>
         {/* <Text>TCS - SPORTS!</Text> */}
+
         <StatusBar style="auto" />
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Home" screenOptions={{ headerStyle: { backgroundColor: "#f22275" }, headerTitleStyle: { fontSize: 20 }, headerTitleAlign: "center", headerTintColor: "#fff" }}  >
@@ -43,7 +46,29 @@ class App extends React.Component {
   }
 }
 
+
+
+// Storage Function key-value
+const storeData = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value)
+    await AsyncStorage.setItem(key, jsonValue)
+  } catch (e) {
+    // save error
+  }
+}
+// Getdata key
+const getData = async (value) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(value)
+    return jsonValue != null ? JSON.parse(jsonValue) : null
+  } catch (e) {
+    // read error
+  }
+}
+
 function EquipoScreen({ navigation }) {
+  const [modalVisible, setModalVisible] = useState(false);
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
   const [editMode, setEditMode] = useState(false)
@@ -52,11 +77,20 @@ function EquipoScreen({ navigation }) {
 
   const addTask = (e) => {
 
+    // storeData('@key2', "Izaick")    
+    // console.log(getData('@key2'))
     e.preventDefault()
     if (isEmpty(task)) {
       console.log("task empty")
       return
     }
+    if (size([...tasks, newTask]) == 3) {
+      //      alert("Solo puede configurar dos equipos")
+      setModalVisible(true)
+      setTask("")
+      return
+    }
+
 
     const newTask = {
       id: shortid.generate(),
@@ -65,6 +99,7 @@ function EquipoScreen({ navigation }) {
 
     setTasks([...tasks, newTask])
     setTask("")
+
   }
 
 
@@ -95,6 +130,29 @@ function EquipoScreen({ navigation }) {
   return (
     <View style={styles.container}>
 
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          //          Alert.alert("M.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Maximo 2 equipos</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Cerrar</Text>
+            </Pressable>
+          </View>
+        </View>
+
+      </Modal>
+
       <ScrollView style={styles.scrollView}>
 
         <View>
@@ -106,16 +164,16 @@ function EquipoScreen({ navigation }) {
               style={styles.input}
               value={task}
             />
-            </View>
-            <View>
+          </View>
+          <View>
             {/* <Button 
               title={editMode ? "Guardar" : "Agregar"}
               onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
             /> */}
             <Pressable  >
-            <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
-            <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
+                <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
+              </TouchableOpacity>
             </Pressable>
 
           </View>
@@ -132,30 +190,30 @@ function EquipoScreen({ navigation }) {
                       <Text style={styles.item}>{task.name}</Text>
 
                       <View style={styles.botonlinea}>
-                      <Button
-                        color='#47d170'
-                        style={styles.buttonList}
-                        title="Jugadores"
-                        onPress={() => navigation.navigate('Jugadores')}
-                      />
-                      
+                        <Button
+                          color='#47d170'
+                          style={styles.buttonList}
+                          title="Jugadores"
+                          onPress={() => navigation.navigate('Jugadores')}
+                        />
 
-                      <Button
-                        color='#479cd1'
-                        style={styles.buttonList}
-                        title="Editar"
-                        onPress={() => editTask(task)}
-                      />
-                      <Button
-                       
-                       marginBottom={10}
-                       color='#c94c3e' 
-                       style={styles.buttonList}
-                       title="Eliminar"
-                       onPress={() => deleteTask(task.id)}
-                     />
-                      
-                    </View> 
+
+                        <Button
+                          color='#479cd1'
+                          style={styles.buttonList}
+                          title="Editar"
+                          onPress={() => editTask(task)}
+                        />
+                        <Button
+
+                          marginBottom={10}
+                          color='#c94c3e'
+                          style={styles.buttonList}
+                          title="Eliminar"
+                          onPress={() => deleteTask(task.id)}
+                        />
+
+                      </View>
                     </View>
                   )))}
             </View>
@@ -169,10 +227,48 @@ function EquipoScreen({ navigation }) {
 
 function HomeScreen({ navigation }) {
   const [number, onChangeNumber] = React.useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const [number_2, onChangeNumber_2] = React.useState(null);
+
+
+
+  const storageAndNavigation = () => {
+    console.log(number + " " + number_2)
+    if (number === null || number === "" || number_2 === null || number_2 === "") {
+      setModalVisible(true)
+      return
+    } else {
+      storeData('@key1', number)
+      storeData('@key2', number_2)
+      return navigation.navigate('Equipos')
+    }
+
+  }
+
   return (
     <View style={styles.cont1}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          // Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Debes llenar los campos para continuar</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Cerrar</Text>
+            </Pressable>
+          </View>
+        </View>
 
+      </Modal>
       <SafeAreaView>
         <Text style={styles.title}>Número de jugadores</Text>
         <View style={styles.cont2}>
@@ -199,7 +295,7 @@ function HomeScreen({ navigation }) {
       </SafeAreaView>
       <View style={styles.cont2}>
         <Pressable>
-          <TouchableOpacity style={styles.buttonxx} onPress={() => navigation.navigate('Equipos')} >
+          <TouchableOpacity style={styles.buttonxx} onPress={(number, number_2) => storageAndNavigation(number, number_2)} >
             <Text style={styles.text}>Aceptar</Text>
           </TouchableOpacity>
         </Pressable>
@@ -275,20 +371,20 @@ function PlayerScreen({ navigation }) {
               style={styles.input}
               value={task}
             />
-             </View>
-             <View>
+          </View>
+          <View>
             {/* <Button 
               title={editMode ? "Guardar" : "Agregar"}
               onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
             /> */}
 
             <Pressable  >
-            <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
-            <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
+                <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
+              </TouchableOpacity>
             </Pressable>
           </View>
-         
+
           <View>
             <View>
 
@@ -301,28 +397,28 @@ function PlayerScreen({ navigation }) {
                     <View key={task.id}>
                       <Text style={styles.item}>{task.name}</Text>
 
-                    <View style={styles.botonlinea}>
-                      
-                    <Button
-                        color='#47d170'
-                        style={styles.buttonList}
-                        title="Escanear"
-                        onPress={() => navigation.navigate('Jugadores')}
-                      />
-                      <Button
-                        color='#479cd1'
-                        style={styles.buttonList}
-                        title="Editar"
-                        onPress={() => editTask(task)}
-                      />
+                      <View style={styles.botonlinea}>
 
-                      
-                      <Button
-                        color='#c94c3e' 
-                        style={styles.buttonList}
-                        title="Eliminar"
-                        onPress={() => deleteTask(task.id)}
-                      />
+                        <Button
+                          color='#47d170'
+                          style={styles.buttonList}
+                          title="Escanear"
+                          onPress={() => navigation.navigate('Jugadores')}
+                        />
+                        <Button
+                          color='#479cd1'
+                          style={styles.buttonList}
+                          title="Editar"
+                          onPress={() => editTask(task)}
+                        />
+
+
+                        <Button
+                          color='#c94c3e'
+                          style={styles.buttonList}
+                          title="Eliminar"
+                          onPress={() => deleteTask(task.id)}
+                        />
                       </View>
                     </View>
                   )))}
@@ -377,11 +473,11 @@ const styles = StyleSheet.create({
   },
   buttonxxx: {
     width: '80%',
-     marginHorizontal:'10%' ,
+    marginHorizontal: '10%',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
-    marginBottom:10,
+    marginBottom: 10,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
@@ -407,6 +503,9 @@ const styles = StyleSheet.create({
   },
   xbutton: {
 
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
   },
   input: {
 
@@ -437,7 +536,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   textList: {
-    marginHorizontal:15,
+    marginHorizontal: 15,
     fontSize: 15,
     lineHeight: 21,
     fontWeight: 'bold',
@@ -518,7 +617,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  }, textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
 });
 
 
