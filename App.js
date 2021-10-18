@@ -4,7 +4,7 @@ import { Modal, Image, TextInput, StyleSheet, Button, View, SafeAreaView, Toucha
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { isEmpty, size } from 'lodash';
+import { get, isEmpty, size } from 'lodash';
 import shortid from 'shortid';
 //import { Input,  } from 'react-native-elements';
 
@@ -19,7 +19,7 @@ class App extends React.Component {
       task: 'aa',
       modalVisible: false,
     }
-
+    storeData('@key1', null)
   }
 
   render() {
@@ -67,7 +67,7 @@ const getData = async (value) => {
   }
 }
 
-function EquipoScreen({ navigation }) {
+function EquipoScreen({ navigation, route }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [task, setTask] = useState("");
   const [tasks, setTasks] = useState([]);
@@ -75,17 +75,14 @@ function EquipoScreen({ navigation }) {
   const [id, setId] = useState("")
 
 
-  const addTask = (e) => {
-
-    // storeData('@key2', "Izaick")    
-    // console.log(getData('@key2'))
+  const addTask = async (e) => {
     e.preventDefault()
     if (isEmpty(task)) {
       console.log("task empty")
       return
     }
     if (size([...tasks, newTask]) == 3) {
-      //      alert("Solo puede configurar dos equipos")
+      //alert("Solo puede configurar dos equipos")      
       setModalVisible(true)
       setTask("")
       return
@@ -94,12 +91,19 @@ function EquipoScreen({ navigation }) {
 
     const newTask = {
       id: shortid.generate(),
-      name: task
+      name: task,
+      years: route.params.datos[0],
+      players: route.params.datos[1],
+
     }
 
     setTasks([...tasks, newTask])
+    console.log([...tasks, newTask])
     setTask("")
-
+    // storeData('@key1', [...tasks, newTask])
+    await AsyncStorage.setItem('@key1', JSON.stringify([...tasks, newTask]))
+    const currentUser = await AsyncStorage.getItem('@key1')
+    console.log('es' + currentUser)
   }
 
 
@@ -135,7 +139,7 @@ function EquipoScreen({ navigation }) {
         transparent={true}
         visible={modalVisible}
         onRequestClose={() => {
-          //          Alert.alert("M.");
+          //Alert.alert("M.");
           setModalVisible(!modalVisible);
         }}
       >
@@ -150,7 +154,6 @@ function EquipoScreen({ navigation }) {
             </Pressable>
           </View>
         </View>
-
       </Modal>
 
       <ScrollView style={styles.scrollView}>
@@ -158,7 +161,6 @@ function EquipoScreen({ navigation }) {
         <View>
           <Text style={styles.title}>Lista de Equipos</Text>
           <View style={styles.cont2}>
-            {/* <Text style={styles.title}>   {editMode ? "Modificar" : "Agregar"}</Text> */}
             <TextInput placeholder="Ingrese el nombre..."
               onChangeText={setTask}
               style={styles.input}
@@ -166,10 +168,6 @@ function EquipoScreen({ navigation }) {
             />
           </View>
           <View>
-            {/* <Button 
-              title={editMode ? "Guardar" : "Agregar"}
-              onPress={(e) => { editMode ? saveTask(e) : addTask(e) }}
-            /> */}
             <Pressable  >
               <TouchableOpacity style={styles.buttonxxx} onPress={(e) => { editMode ? saveTask(e) : addTask(e) }} >
                 <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
@@ -194,10 +192,8 @@ function EquipoScreen({ navigation }) {
                           color='#47d170'
                           style={styles.buttonList}
                           title="Jugadores"
-                          onPress={() => navigation.navigate('Jugadores')}
+                          onPress={() => navigation.navigate('Jugadores', { names: [task.id, task.name, task.years, task.players] })}
                         />
-
-
                         <Button
                           color='#479cd1'
                           style={styles.buttonList}
@@ -205,7 +201,6 @@ function EquipoScreen({ navigation }) {
                           onPress={() => editTask(task)}
                         />
                         <Button
-
                           marginBottom={10}
                           color='#c94c3e'
                           style={styles.buttonList}
@@ -229,22 +224,17 @@ function HomeScreen({ navigation }) {
   const [number, onChangeNumber] = React.useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [number_2, onChangeNumber_2] = React.useState(null);
-
-
-
   const storageAndNavigation = () => {
     console.log(number + " " + number_2)
     if (number === null || number === "" || number_2 === null || number_2 === "") {
       setModalVisible(true)
       return
     } else {
-      storeData('@key1', number)
-      storeData('@key2', number_2)
-      return navigation.navigate('Equipos')
+      // storeData('@key1', number)
+      // storeData('@key2', number_2)
+      return navigation.navigate('Equipos', { datos: [number, number_2] })
     }
-
   }
-
   return (
     <View style={styles.cont1}>
       <Modal
@@ -308,28 +298,63 @@ function HomeScreen({ navigation }) {
 
 }
 
-function PlayerScreen({ navigation }) {
+function PlayerScreen({ navigation, route }) {
+  const [modalVisible, setModalVisible] = useState(false);
   const [task, setTask] = useState("");
+  const [total, setTotal] = useState(route.params.names[2]);
+  const [age, setAge] = useState("");
   const [tasks, setTasks] = useState([]);
   const [editMode, setEditMode] = useState(false)
   const [id, setId] = useState("")
+  const [resultadoPlayer, setResult] = useState(route.params.names[3]);
 
 
   const addTask = (e) => {
-
     e.preventDefault()
     if (isEmpty(task)) {
       console.log("task empty")
       return
     }
 
+    if (size([...tasks, newTask]) > route.params.names[3]) {
+      //alert("Solo puede configurar dos equipos")      
+      setModalVisible(true)
+      setTask("")
+      setAge("")
+      return
+    }
+
     const newTask = {
       id: shortid.generate(),
-      name: task
+      idequipo: route.params.names[0],
+      name: task,
+      age: parseInt(age),
+
+    }
+    const total = [...tasks, newTask].map((task) => (
+      task.age
+    ));
+    console.log(total)
+    const sumaPrecios = total.reduce((prev, next) => prev + next, 0);
+    if (route.params.names[2] - sumaPrecios < 0) {
+      setModalVisible(true)
+      setTask("")
+      setAge("")
+      return
     }
 
     setTasks([...tasks, newTask])
+
+
+
+
+
+    setTotal(route.params.names[2] - sumaPrecios)
+
+    setResult(route.params.names[3] - size([...tasks, newTask]));
+    console.log([...tasks, newTask])
     setTask("")
+    setAge("")
   }
 
 
@@ -341,17 +366,18 @@ function PlayerScreen({ navigation }) {
 
   const editTask = (theTask) => {
     setTask(theTask.name)
+    setAge(theTask.age)
     setEditMode(true)
     setId(theTask.id)
   }
 
   const saveTask = () => {
-
     //setTasks([...tasks, newTask])
-    const editedTasks = tasks.map(item => item.id === id ? { id, name: task } : item)
+    const editedTasks = tasks.map(item => item.id === id ? { id, name: task, age: age } : item)
     setTasks(editedTasks)
     setEditMode(false)
     setTask("")
+    setAge("")
     setId("")
   }
 
@@ -359,17 +385,47 @@ function PlayerScreen({ navigation }) {
 
   return (
     <View style={styles.cont1}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          //Alert.alert("M.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Maximo {resultadoPlayer} jugadores y máximo {total} años</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Cerrar</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
 
       <ScrollView style={styles.scrollView}>
-
         <View>
-          <Text style={styles.title}>Lista de Jugadores</Text>
+          <Text style={styles.title}>Equipo: {route.params.names[1]}</Text>
+          <Text style={styles.textList}>Registro de jugadores</Text>
           <View style={styles.cont2}>
             {/* <Text style={styles.title}>   {editMode ? "Modificar" : "Agregar"}</Text> */}
             <TextInput placeholder="Ingrese el nombre..."
               onChangeText={setTask}
               style={styles.input}
               value={task}
+            />
+          </View>
+          <View style={styles.cont2}>
+
+            <TextInput placeholder="Ingrese la edad..."
+              onChangeText={setAge}
+              style={styles.input}
+              value={age}
+              keyboardType="numeric"
             />
           </View>
           <View>
@@ -383,6 +439,9 @@ function PlayerScreen({ navigation }) {
                 <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
               </TouchableOpacity>
             </Pressable>
+
+            <Text style={styles.textYearsPlayers}>Numero de años:  {total}</Text>
+            <Text style={styles.textYearsPlayers}>Numero de jugadores:  {resultadoPlayer}</Text>
           </View>
 
           <View>
@@ -395,7 +454,7 @@ function PlayerScreen({ navigation }) {
                 ) : (
                   tasks.map((task) => (
                     <View key={task.id}>
-                      <Text style={styles.item}>{task.name}</Text>
+                      <Text style={styles.item}>{task.name}  {task.age}</Text>
 
                       <View style={styles.botonlinea}>
 
@@ -509,8 +568,6 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   input: {
-
-    padding: 10,
     borderWidth: 1,
     borderColor: '#7f8c8d',
     color: '#252626',
@@ -530,13 +587,24 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   title: {
+    textAlign: 'center',
     color: '#252626',
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 5,
     marginHorizontal: 15,
   },
   textList: {
+    padding: 10,
+    marginHorizontal: 15,
+    fontSize: 15,
+    lineHeight: 21,
+    fontWeight: 'bold',
+    letterSpacing: 0.25,
+    color: 'black',
+  },
+  textYearsPlayers: {
+    textAlign: 'right',
     marginHorizontal: 15,
     fontSize: 15,
     lineHeight: 21,
