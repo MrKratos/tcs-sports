@@ -258,12 +258,12 @@ function HomeScreen({ navigation }) {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Debes llenar los campos para continuar</Text>
+            <Text style={styles.modalText}>Debe llenar los campos para continuar</Text>
             <Pressable
               style={[styles.button, styles.buttonClose]}
               onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.textStyle}>Cerrar</Text>
+              <Text style={styles.textStyle}>OK</Text>
             </Pressable>
           </View>
         </View>
@@ -276,18 +276,18 @@ function HomeScreen({ navigation }) {
             style={styles.input}
             onChangeText={onChangeNumber_2}
             value={number_2}
-            placeholder="Jugadores"
+            placeholder="# Jugadores"
             keyboardType="numeric"
           />
         </View>
 
-        <Text style={styles.title}>Número de años</Text>
+        <Text style={styles.title}>Total de años</Text>
         <View style={styles.cont2}>
           <TextInput
             style={styles.input}
             onChangeText={onChangeNumber}
             value={number}
-            placeholder="Años"
+            placeholder="# Años"
             keyboardType="numeric"
           />
         </View>
@@ -505,7 +505,8 @@ const styles = StyleSheet.create({
 
   },
   buttonClose: {
-    backgroundColor: "#2196F3",
+    backgroundColor: "#f22275",
+    borderRadius: 30,
   },
   input: {
 
@@ -644,7 +645,10 @@ const styles = StyleSheet.create({
   }, textStyle: {
     color: "white",
     fontWeight: "bold",
-    textAlign: "center"
+    textAlign: "center",
+    fontSize: 16,
+    lineHeight: 21,
+    letterSpacing: 0.25,
   },
 });
 
