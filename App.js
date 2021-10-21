@@ -88,9 +88,9 @@ function EquipoScreen({ navigation, route }) {
   const [id, setId] = useState("")
   global.years = route.params.datos[0]
   global.players = route.params.datos[1]
-
+  const [team, setTeam] = useState(global.teamA)
+  console.log("team" + team)
   const addTask = async (e) => {
-
     e.preventDefault()
     if (isEmpty(task)) {
       console.log("task empty")
@@ -120,7 +120,6 @@ function EquipoScreen({ navigation, route }) {
     const currentUser = await AsyncStorage.getItem('@key1')
     console.log('es' + currentUser)
     global.MyVar = [...tasks, newTask];
-
   }
 
 
@@ -145,11 +144,6 @@ function EquipoScreen({ navigation, route }) {
     setEditMode(false)
     setTask("")
     setId("")
-  }
-
-  const navigateParams = () => {
-
-
   }
   return (
     <View style={styles.container}>
@@ -212,7 +206,7 @@ function EquipoScreen({ navigation, route }) {
                           color='#47d170'
                           style={styles.buttonList}
                           title="Jugadores"
-                          onPress={() => navigation.navigate('Jugadores', { names: [task.id, task.name, global.years, global.players] })}
+                          onPress={() => navigation.navigate('Jugadores', { names: [task.id, task.name, global.years, global.players, global.teamA] })}
                         />
                         <Button
                           color='#479cd1'
@@ -240,99 +234,22 @@ function EquipoScreen({ navigation, route }) {
   );
 }
 
-function HomeScreen({ navigation }) {
-  const [number, onChangeNumber] = React.useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [number_2, onChangeNumber_2] = React.useState(null);
-  const storageAndNavigation = () => {
-    if (number === null || number === "" || number_2 === null || number_2 === "") {
-
-      setModalVisible(true)
-      return
-    } else {
-      // storeData('@key1', number)
-      // storeData('@key2', number_2)
-      console.log(number + "  " + number_2)
-      return navigation.navigate('Equipos', { datos: [number, number_2] })
-    }
-  }
-  return (
-    <View style={styles.cont1}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          // Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Debe llenar los campos para continuar</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>OK</Text>
-            </Pressable>
-          </View>
-        </View>
-
-      </Modal>
-      <SafeAreaView>
-        <Text style={styles.title}>Número de jugadores</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber_2}
-            value={number_2}
-            placeholder="# Jugadores"
-            keyboardType="numeric"
-          />
-        </View>
-
-        <Text style={styles.title}>Total de años</Text>
-        <View style={styles.cont2}>
-          <TextInput
-            style={styles.input}
-            onChangeText={onChangeNumber}
-            value={number}
-            placeholder="# Años"
-            keyboardType="numeric"
-          />
-        </View>
-
-      </SafeAreaView>
-      <View style={styles.cont2}>
-        <Pressable>
-          <TouchableOpacity style={styles.buttonxx} onPress={(number, number_2) => storageAndNavigation(number, number_2)} >
-            <Text style={styles.text}>Aceptar</Text>
-          </TouchableOpacity>
-        </Pressable>
-
-      </View>
-      <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
-
-    </View>
-  );
-
-}
 
 function PlayerScreen({ navigation, route }) {
-
   const [modalVisible, setModalVisible] = useState(false);
   const [task, setTask] = useState("");
-  const [total, setTotal] = useState(route.params.names[2]);
+
+  const [total, setTotal] = useState(
+    route.params.names[2] - route.params.names[4].filter(task => task.idequipo == route.params.names[0]).map((task) => (
+      task.age)).reduce((prev, next) => prev + next, 0));
   const [age, setAge] = useState("");
   //ingreso
-  const [tasks, setTasks] = useState();
-
+  console.log("team as" + route.params.names[4].filter(task => task.idequipo == route.params.names[0]))
+  const [tasks, setTasks] = useState(route.params.names[4]);
   const [editMode, setEditMode] = useState(false)
   const [id, setId] = useState("")
-  const [resultadoPlayer, setResult] = useState(route.params.names[3]);
-
-
+  const [resultadoPlayer, setResult] = useState(route.params.names[3] - size(
+    route.params.names[4].filter(task => task.idequipo == route.params.names[0])));
   const addTask = (e) => {
     e.preventDefault()
     if (isEmpty(task)) {
@@ -355,38 +272,38 @@ function PlayerScreen({ navigation, route }) {
       age: parseInt(age),
 
     }
+
+
     const total = [...tasks, newTask].map((task) => (
       task.age
     ));
-    console.log(total)
     const sumaPrecios = total.reduce((prev, next) => prev + next, 0);
+
+    console.log(total)
     if (route.params.names[2] - sumaPrecios < 0) {
       setModalVisible(true)
       setTask("")
       setAge("")
       return
     }
+    setTotal(route.params.names[2] - [...tasks, newTask].filter(task => task.idequipo == route.params.names[0]).map((task) => (
+      task.age)).reduce((prev, next) => prev + next, 0))
+
+    // route.params.names[2] - [...tasks, newTask].filter(task => task.idequipo == route.params.names[0]).map((task) => (
+    //   task.age)).reduce((prev, next) => prev + next, 0)
 
     setTasks([...tasks, newTask])
-
-
-
-
-
-    setTotal(route.params.names[2] - sumaPrecios)
-
-    setResult(route.params.names[3] - size([...tasks, newTask]));
-    console.log([...tasks, newTask])
-    if (route.params.names[0] == 1) {
-      global.teamA = [...tasks, newTask]
-    }
-    if (route.params.names[0] == 2) {
-      global.teamB = [...tasks, newTask]
-    }
+    setResult(route.params.names[3] - size([...tasks, newTask].filter(task => task.idequipo == route.params.names[0])));
+    console.log([...tasks, newTask].filter(task => task.idequipo == route.params.names[0]))
+    // if (route.params.names[0] == 1) {
+    global.teamA = global.teamA.concat(newTask)
+    console.log("teamA" + global.teamA)
+    // }
+    // if (route.params.names[0] == 2) {
+    //   global.teamB = [...tasks, newTask]
+    // }
     setTask("")
     setAge("")
-
-
   }
 
 
@@ -394,6 +311,12 @@ function PlayerScreen({ navigation, route }) {
     const filteredTasks = tasks.filter(task =>
       task.id != id)
     setTasks(filteredTasks)
+    global.teamA = global.teamA.filter(task =>
+      task.id != id)
+    setResult(route.params.names[3] - parseInt(size(global.teamA)));
+
+
+
   }
 
   const editTask = (theTask) => {
@@ -471,51 +394,140 @@ function PlayerScreen({ navigation, route }) {
                 <Text style={styles.text}>   {editMode ? "Modificar" : "Agregar"}</Text>
               </TouchableOpacity>
             </Pressable>
-            <Text style={styles.textYearsPlayers}>Numero de años:  {total}</Text>
-            <Text style={styles.textYearsPlayers}>Numero de jugadores:  {resultadoPlayer}</Text>
+            <Text style={styles.textYearsPlayers}>Numero de años: {total}</Text>
+            <Text style={styles.textYearsPlayers}>Numero de jugadores: {resultadoPlayer}</Text>
           </View>
 
           <View>
-            <View>
-
+            <View >
               {
                 size(tasks) == 0 ? (
+
                   <Text style={styles.textList}>Aun no hay jugadores registrados</Text>
 
                 ) : (
                   tasks.map((task) => (
-                    <View key={task.id}>
-                      <Text style={styles.item}>{task.name}  {task.age}</Text>
+                    (task.idequipo) == route.params.names[0] ? (
+                      <View key={task.id}>
+                        <Text style={styles.item}>{task.name}  {task.age}</Text>
+                        <View style={styles.botonlinea}>
+                          <Button
+                            color='#47d170'
+                            style={styles.buttonList}
+                            title="Escanear"
+                            onPress={() => navigation.navigate('Jugadores')}
+                          />
+                          <Button
+                            color='#479cd1'
+                            style={styles.buttonList}
+                            title="Editar"
+                            onPress={() => editTask(task)}
+                          />
 
-                      <View style={styles.botonlinea}>
 
-                        <Button
-                          color='#47d170'
-                          style={styles.buttonList}
-                          title="Escanear"
-                          onPress={() => navigation.navigate('Jugadores')}
-                        />
-                        <Button
-                          color='#479cd1'
-                          style={styles.buttonList}
-                          title="Editar"
-                          onPress={() => editTask(task)}
-                        />
-
-
-                        <Button
-                          color='#c94c3e'
-                          style={styles.buttonList}
-                          title="Eliminar"
-                          onPress={() => deleteTask(task.id)}
-                        />
+                          <Button
+                            color='#c94c3e'
+                            style={styles.buttonList}
+                            title="Eliminar"
+                            onPress={() => deleteTask(task.id)}
+                          />
+                        </View>
                       </View>
-                    </View>
-                  )))}
+                    ) : (
+
+
+                      <Text ></Text>
+
+
+                    )
+
+
+                  )
+                  ))}
             </View>
           </View>
         </View>
-      </ScrollView>
+      </ScrollView >
+
+    </View >
+  );
+
+}
+
+
+function HomeScreen({ navigation }) {
+  const [number, onChangeNumber] = React.useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [number_2, onChangeNumber_2] = React.useState(null);
+  const storageAndNavigation = () => {
+    if (number === null || number === "" || number_2 === null || number_2 === "") {
+
+      setModalVisible(true)
+      return
+    } else {
+      // storeData('@key1', number)
+      // storeData('@key2', number_2)
+      console.log(number + "  " + number_2)
+      return navigation.navigate('Equipos', { datos: [number, number_2] })
+    }
+  }
+  return (
+    <View style={styles.cont1}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          // Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Debe llenar los campos para continuar</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>OK</Text>
+            </Pressable>
+          </View>
+        </View>
+
+      </Modal>
+      <SafeAreaView>
+        <Text style={styles.title}>Número de jugadores</Text>
+        <View style={styles.cont2}>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeNumber_2}
+            value={number_2}
+            placeholder="# Jugadores"
+            keyboardType="numeric"
+          />
+        </View>
+
+        <Text style={styles.title}>Total de años</Text>
+        <View style={styles.cont2}>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeNumber}
+            value={number}
+            placeholder="# Años"
+            keyboardType="numeric"
+          />
+        </View>
+
+      </SafeAreaView>
+      <View style={styles.cont2}>
+        <Pressable>
+          <TouchableOpacity style={styles.buttonxx} onPress={(number, number_2) => storageAndNavigation(number, number_2)} >
+            <Text style={styles.text}>Aceptar</Text>
+          </TouchableOpacity>
+        </Pressable>
+
+      </View>
+      <View style={styles.separator} lightColor="#000" darkColor="rgba(255,255,255,0.1)" />
 
     </View>
   );
