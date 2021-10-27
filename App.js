@@ -313,7 +313,9 @@ function PlayerScreen({ navigation, route }) {
     setTasks(filteredTasks)
     global.teamA = global.teamA.filter(task =>
       task.id != id)
-    setResult(route.params.names[3] - parseInt(size(global.teamA)));
+    setResult(route.params.names[3] - size(global.teamA.filter(task => task.idequipo == route.params.names[0])));
+    setTotal(route.params.names[2] - global.teamA.filter(task => task.idequipo == route.params.names[0]).map((task) => (
+      task.age)).reduce((prev, next) => prev + next, 0))
 
 
 
@@ -328,8 +330,15 @@ function PlayerScreen({ navigation, route }) {
 
   const saveTask = () => {
     //setTasks([...tasks, newTask])
-    const editedTasks = tasks.map(item => item.id === id ? { id, name: task, age: age } : item)
+    // const editedTasks = tasks.map(item => item.id === id ? { id, name: task, age: age } : item)
+    const editedTasks = (global.teamA.filter(task => task.idequipo == route.params.names[0]).map(item => item.id === id ? { id, name: task, age: parseInt(age), idequipo: route.params.names[0], } : item))
+    console.log(editedTasks)
+    //Edit list Global
+    //global.teamA.filter(task => task.idequipo == route.params.names[0]).map(item => item.id === id ? { id, name: task, age: age } : item)
+    global.teamA = global.teamA.filter(task => task.idequipo == route.params.names[0]).map(item => item.id === id ? { id, name: task, age: parseInt(age), idequipo: route.params.names[0], } : item)
     setTasks(editedTasks)
+    setTotal(route.params.names[2] - global.teamA.filter(task => task.idequipo == route.params.names[0]).map((task) => (
+      task.age)).reduce((prev, next) => prev + next, 0))
     setEditMode(false)
     setTask("")
     setAge("")
