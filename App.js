@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get, isEmpty, size } from 'lodash';
 import shortid from 'shortid';
+import { Picker } from "@react-native-picker/picker";
 //import { Input,  } from 'react-native-elements';
 
 const Stack = createNativeStackNavigator();
@@ -507,15 +508,22 @@ function HomeScreen({ navigation }) {
       <SafeAreaView>
         <Text style={styles.title}>Número de jugadores</Text>
         <View style={styles.cont2}>
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             onChangeText={onChangeNumber_2}
             value={number_2}
             placeholder="# Jugadores"
             keyboardType="numeric"
-          />
-        </View>
-
+          /> */}
+         
+        
+        <Picker style={styles.input} onValueChange={ onChangeNumber_2 } value={number_2}>
+            <Picker.Item label="5" value= { 5 } />
+            <Picker.Item label="7" value= { 7 } />
+            <Picker.Item label="8" value= { 8 } />
+            <Picker.Item label="10" value= { 10 } />
+        </Picker>
+</View>
         <Text style={styles.title}>Total de años</Text>
         <View style={styles.cont2}>
           <TextInput
