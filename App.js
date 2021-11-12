@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get, isEmpty, size } from 'lodash';
 import shortid from 'shortid';
 import { Picker } from "@react-native-picker/picker";
+import { color } from 'react-native-reanimated';
 //import { Input,  } from 'react-native-elements';
 
 const Stack = createNativeStackNavigator();
@@ -359,14 +360,14 @@ function PlayerScreen({ navigation, route }) {
           setModalVisible(!modalVisible);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Maximo {resultadoPlayer} jugadores y máximo {total} años</Text>
+        <View style={styles.centeredView2}>
+          <View style={styles.modalRojo}>
+            <Text style={styles.textStyle2}>Faltan {resultadoPlayer} jugadores{"\n"}Maximo {total} años</Text>
             <Pressable
-              style={[styles.button, styles.buttonClose]}
+              style={[styles.buttonClose2]}
               onPress={() => setModalVisible(!modalVisible)}
             >
-              <Text style={styles.textStyle}>Cerrar</Text>
+              <Text style={styles.modalText2}>Cerrar</Text>
             </Pressable>
           </View>
         </View>
@@ -421,7 +422,8 @@ function PlayerScreen({ navigation, route }) {
                       <View key={task.id}>
                         <Text style={styles.item}>{task.name}  {task.age}</Text>
                         <View style={styles.botonlinea}>
-                          <Button
+                          <Button 
+                            disabled={true}
                             color='#47d170'
                             style={styles.buttonList}
                             title="Escanear"
@@ -519,9 +521,12 @@ function HomeScreen({ navigation }) {
         
         <Picker style={styles.input} onValueChange={ onChangeNumber_2 } value={number_2}>
             <Picker.Item label="5" value= { 5 } />
+            <Picker.Item label="6" value= { 6 } />
             <Picker.Item label="7" value= { 7 } />
             <Picker.Item label="8" value= { 8 } />
+            <Picker.Item label="9" value= { 9 } />
             <Picker.Item label="10" value= { 10 } />
+            <Picker.Item label="11" value= { 11 } />
         </Picker>
 </View>
         <Text style={styles.title}>Total de años</Text>
@@ -626,6 +631,19 @@ const styles = StyleSheet.create({
   buttonClose: {
     backgroundColor: "#f22275",
     borderRadius: 30,
+  },
+  buttonClose2: {
+    backgroundColor: "#fff",
+    borderRadius: 30,
+    marginTop: '180%',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 3,
+    color: 'red',
+    fontWeight: 'bold',
+    height: 40,
+    width: 120,
+    fontSize: 18,
   },
   input: {
     borderWidth: 1,
@@ -752,9 +770,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 22
   },
+  centeredView2: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
   modalText: {
     marginBottom: 15,
     textAlign: "center"
+  },
+  modalText2: {
+    //marginBottom: 15,
+    textAlign: "center",
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 18
   },
   modalView: {
     margin: 20,
@@ -770,13 +801,54 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5
-  }, textStyle: {
+  }, 
+  modalVerde: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  }, 
+  modalRojo: {
+    margin: 20,
+    width: '95%' ,
+    height: '90%' ,
+    backgroundColor: "red",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  }, 
+  textStyle: {
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
     fontSize: 16,
     lineHeight: 21,
     letterSpacing: 0.25,
+  },
+  textStyle2: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 24,
+    lineHeight: 30,
+    letterSpacing: 0.3,
   },
 });
 
